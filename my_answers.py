@@ -3,6 +3,7 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
+from keras.layers import Activation
 import keras
 
 
@@ -39,19 +40,40 @@ def build_part1_RNN(window_size): #so this just outputs a model
 
 ### TODO: return the text input with only ascii lowercase and the punctuation given below included.
 def cleaned_text(text):
-    punctuation = ['!', ',', '.', ':', ';', '?']
-
-    return text
+    from string import punctuation
+    punctuation_keep = ['!', ',', '.', ':', ';', '?']
+    keep_text = ''
+    for char in text:
+        if char not in punctuation or char in punctuation_keep:
+            keep_text += char.lower()
+        else:
+            keep_text += ' '
+        
+    return keep_text
 
 ### TODO: fill out the function below that transforms the input text and window-size into a set of input/output pairs for use with our RNN model
 def window_transform_text(text, window_size, step_size):
     # containers for input/output pairs
     inputs = []
     outputs = []
+    idx = window_size
+    while idx <= len(text):
+        inputs.append(text[idx-window_size:idx])
+        outputs.append(text[idx])
+        
+        #print(idx-window_size,':',idx)
+        #print(text[idx-window_size:idx], '-', text[idx])
 
-    return inputs,outputs
+        idx += 5
+
+    return inputs, outputs
 
 # TODO build the required RNN model: 
 # a single LSTM hidden layer with softmax activation, categorical_crossentropy loss 
 def build_part2_RNN(window_size, num_chars):
-    pass
+    model = Sequential()
+    model.add(LSTM(200, input_shape = (window_size, num_chars), return_sequences = True))
+    model.add(Dense(num_chars))
+    model.add(Dense(num_chars, activation = 'softmax'))
+
+    return model
