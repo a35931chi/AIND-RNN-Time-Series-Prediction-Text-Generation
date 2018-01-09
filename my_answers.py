@@ -56,6 +56,7 @@ def window_transform_text(text, window_size, step_size):
     inputs = []
     outputs = []
     idx = window_size
+    # could try range(start, stop[, step]) instead of while loop
     while idx <= len(text):
         inputs.append(text[idx-window_size:idx])
         outputs.append(text[idx])
